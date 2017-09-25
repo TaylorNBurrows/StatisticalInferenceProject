@@ -60,7 +60,7 @@ hist(mean_sim, xlab="mean",main="Sample Variance/Theoretical Variance")
 abline(v=mean_sample,col="green")
 abline(v=Theoretical_mean,col="red")
 ```
-![plot of chunk unnamed-chunk-1](/With Theoreticalvs.Variance.jpeg)
+![plot of chunk unnamed-chunk-1](/ShowsMeans.jpeg)
 
 ### Question 2: Show how variable the sample is (via variance) and compare it to the theoretical variance of the distribution.
 ```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}

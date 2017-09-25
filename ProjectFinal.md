@@ -100,3 +100,38 @@ lines(x, y, pch=21, col="blue", lty=5)
 ```
 ![plot of chunk unnamed-chunk-1](/NormalDistribution.jpeg)
 #### Answer: The distribution of means (red line) of the sampled exponential distributions appear to follow a normal distribution (dashed line) due to the Central Limit Theorem. The two lines showing distribution almost overlap, showing how close they are to each other. 
+
+
+
+#Part Two: Basic Inferential Data Analysis Instructions
+
+
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+# load the dataset
+library(datasets)
+data(ToothGrowth)
+str(ToothGrowth)
+
+#Perform Exploratory Data Analysis
+str(ToothGrowth)
+head(ToothGrowth)
+
+#Summarize Datset
+summary(ToothGrowth)
+table(ToothGrowth$dose, ToothGrowth$supp)
+
+## Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose.
+t.test(len ~ supp, data = ToothGrowth)
+
+#Create Subgroups
+ToothGrowth.doses_0.5_1.0 <- subset (ToothGrowth, dose %in% c(0.5, 1.0)) 
+ToothGrowth.doses_0.5_2.0 <- subset (ToothGrowth, dose %in% c(0.5, 2.0)) 
+ToothGrowth.doses_1.0_2.0 <- subset (ToothGrowth, dose %in% c(1.0, 2.0)) 
+
+t.test(len ~ dose, data = ToothGrowth.doses_0.5_1.0)
+t.test(len ~ dose, data = ToothGrowth.doses_0.5_2.0)
+t.test(len ~ dose, data = ToothGrowth.doses_1.0_2.0)
+
+```
+### Conclusion: Greater dose leads to greater tooth growth. 
+### Assumptions: Dataset is the result of a random sampling. 

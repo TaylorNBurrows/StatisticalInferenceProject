@@ -53,7 +53,7 @@ hist(mean_Sim, xlab="Means", ylab="Frequency", main="Simulation Mean Distributio
 #sample mean
 mean_sample<-mean(mean_Sim)
 
-#theoretical Variance
+#theoretical mean
 Theoretical_mean<-1/lambda
 
 #show histogram of means
@@ -62,6 +62,8 @@ abline(v=mean_sample,col="green")
 abline(v=Theoretical_mean,col="red")
 ```
 ![plot of chunk unnamed-chunk-1](/ShowsMeans.jpeg)
+
+#### Answer: The theoretical mean and the actual mean are very close shown in the code as well as the figure. 
 
 ### Question 2: Show how variable the sample is (via variance) and compare it to the theoretical variance of the distribution.
 ```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
@@ -81,7 +83,7 @@ variance
 theo_Variance<-((1/lambda)*(1/sqrt(n)))^2
 theo_Variance
 ```
-
+#### Answer: The theoretical variance and the acutal variance are very close. 
 
 ### Question 3: Show that the distribution is approximately normal.
 ```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
@@ -97,3 +99,4 @@ lines(density(mean_Sim), lwd=3, col="red")
 lines(x, y, pch=21, col="blue", lty=5)
 ```
 ![plot of chunk unnamed-chunk-1](/NormalDistribution.jpeg)
+#### Answer: The distribution of means (red line) of the sampled exponential distributions appear to follow a normal distribution (dashed line) due to the Central Limit Theorem. The two lines showing distribution almost overlap, showing how close they are to each other. 

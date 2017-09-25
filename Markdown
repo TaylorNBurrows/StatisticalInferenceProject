@@ -1,0 +1,236 @@
+---
+Title: "Statistical Inference Course Project"
+Author: "Taylor Burrows"
+Date: "September 24, 2017"
+---
+
+# Statistical Inference Course Project
+ 
+ Author: Taylor Burrows (09/24/2017)
+
+
+### 1. Description of Assignment
+
+In this project you will investigate the exponential distribution in R and compare it with the Central Limit Theorem. The exponential distribution can be simulated in R with rexp(n, lambda) where lambda is the rate parameter. The mean of exponential distribution is 1/lambda and the standard deviation is also 1/lambda. Set lambda = 0.2 for all of the simulations. You will investigate the distribution of averages of 40 exponentials. Note that you will need to do a thousand simulations.
+
+Source: Course Project Instructions. 
+
+### 2. Simulations
+
+The first step was to set up the simulations using R using the specified parameters. 
+
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+#Open Library to access installed packages
+library(knitr)
+library(ggplot2)
+
+#set seed to create random variable
+set.seed(567)
+
+#use provided sampling values to create simulation
+lambda <- 0.2
+n_sample <- 40 
+sim <- 1000
+
+#run simulation
+sim_exponent <- matrix(rexp(sim*n_sample, rate=lambda), sim, n_sample)
+```
+
+### Question 1: Show the sample mean and compare it to the theoretical mean of the distribution.
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+
+# Mean of simulation
+mean_Sim <- rowMeans(sim_exponent)
+
+#create histogram
+hist(mean_Sim, xlab="Means", ylab="Frequency", main="Simulation Mean Distribution", col="blue")
+
+#sample mean
+mean_sample<-mean(mean_Sim)
+
+#theoretical Variance
+Theoretical_mean<-1/lambda
+
+#show histogram of means
+hist(mean_sim, xlab="mean",main="Sample Variance/Theoretical Variance")
+abline(v=mean_sample,col="green")
+abline(v=Theoretical_mean,col="red")
+```
+![plot of chunk unnamed-chunk-1](/With Theoreticalvs.Variance.jpeg)
+
+### Question 2: Show how variable the sample is (via variance) and compare it to the theoretical variance of the distribution.
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+#Standard Deviation of the mean
+std_dev<-sd(mean_Sim)
+std_dev
+
+##Theoritaical Std.Deviation
+std_dev_th<- (1/lambda)/sqrt(n)
+std_dev_th
+
+##Variance of distribution
+variance<-std_dev^2
+variance
+
+##Theoretical Variance
+theo_Variance<-((1/lambda)*(1/sqrt(n)))^2
+theo_Variance
+```
+
+
+### Question 3: Show that the distribution is approximately normal.
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+#Show normal distribution
+x <- seq(min(mean_Sim), max(mean_Sim), length=100)
+y <- dnorm(xfit, mean=1/lambda, sd=(1/lambda/sqrt(n)))
+hist(mean_Sim,breaks=n,prob=T,col="yellow",xlab = "Means",main="Distribution of Means",ylab="Frequency")
+
+#density of distribution
+lines(density(mean_Sim), lwd=3, col="red")
+
+#Show Normal Distribution curve as well to show comparison
+lines(x, y, pch=21, col="blue", lty=5)
+```
+
+##### 3.1 Load file and look at data
+
+```r
+setwd("~/datasciencecoursera/3Reproducible Research/Project2")
+
+if(!file.exists("./NOAA_Data")) {
+  dir.create("./NOAA_Data")
+}
+    fileUrl<-"https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.bz2"
+    download.file(fileUrl,destfile = "./NOAA_Data/NOAA_Storm_Data.csv", method="curl")
+    bunzip2("./NOAA_Data/NOAA_Storm_Data.bz2", exdir="./NOAA_Storm_Data.csv")
+    
+NOAA<-read.csv("NOAA_Storm_Data.csv")
+
+```
+
+
+##### 3.2. Narrow data down by subsetting and reducing
+
+```r
+data_col <- c("EVTYPE", "FATALITIES", "INJURIES", "PROPDMG", "PROPDMGEXP", "CROPDMG", 
+    "CROPDMGEXP")
+NOAA_Data<- NOAA[data_col]
+   
+```
+
+##### 3.3. Clean up data set and prepare data for analysis
+Prepare property damage data and crop data to allow exponents to show correctly in your tidy data set and figures. 
+
+Property Exponents
+```r
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == "K"] <- 1000
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == "M"] <- 1e+06
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == ""] <- 1
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == "B"] <- 1e+09
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == "m"] <- 1e+06
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == "0"] <- 1
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == "5"] <- 1e+05
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == "6"] <- 1e+06
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == "4"] <- 10000
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == "2"] <- 100
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == "3"] <- 1000
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == "h"] <- 100
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == "7"] <- 1e+07
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == "H"] <- 100
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == "1"] <- 10
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == "8"] <- 1e+08
+
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == "+"] <- 0
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == "-"] <- 0
+NOAA_Data$PROPEXP[NOAA_Data$PROPDMGEXP == "?"] <- 0
+
+NOAA_Data$PROPDMGVAL <- NOAA_Data$PROPDMG * NOAA_Data$PROPEXP
+
+```
+
+Crop Exponents
+
+```r
+NOAA_Data$CROPEXP[NOAA_Data$CROPDMGEXP == "M"] <- 1e+06
+NOAA_Data$CROPEXP[NOAA_Data$CROPDMGEXP == "K"] <- 1000
+NOAA_Data$CROPEXP[NOAA_Data$CROPDMGEXP == "m"] <- 1e+06
+NOAA_Data$CROPEXP[NOAA_Data$CROPDMGEXP == "B"] <- 1e+09
+NOAA_Data$CROPEXP[NOAA_Data$CROPDMGEXP == "0"] <- 1
+NOAA_Data$CROPEXP[NOAA_Data$CROPDMGEXP == "k"] <- 1000
+NOAA_Data$CROPEXP[NOAA_Data$CROPDMGEXP == "2"] <- 100
+NOAA_Data$CROPEXP[NOAA_Data$CROPDMGEXP == ""] <- 1
+NOAA_Data$CROPEXP[NOAA_Data$CROPDMGEXP == "?"] <- 0
+NOAA_Data$CROPDMGVAL <- NOAA_Data$CROPDMG * NOAA_Data$CROPEXP
+
+```
+
+##### 3.4. Organize data so that it can be combined and aggregated
+Organize by event that we are capturing in results
+```r
+fatalities <- aggregate(FATALITIES ~ EVTYPE, data = NOAA_Data, FUN = sum)
+injuries<- aggregate(INJURIES ~ EVTYPE, data = NOAA_Data, FUN = sum)
+prop_dam <- aggregate(PROPDMGVAL ~ EVTYPE, data = NOAA_Data, FUN = sum)
+crop_dam <- aggregate(CROPDMGVAL ~ EVTYPE, data = NOAA_Data, FUN = sum)
+```
+
+##### 3.5. Obtain top 10 for each category 
+The data set includes a lot of data, narrowing it down will aid in the analysis
+
+Top 10 Public Health
+
+```r
+fatalities_10 <- fatalities[order(-fatalities$FATALITIES), ][1:10, ]
+injuries_10 <- injuries[order(-injuries$INJURIES), ][1:10, ]
+
+```
+
+Top 10 Economic 
+
+```r
+prop_dam10 <- prop_dam[order(-prop_dam$PROPDMGVAL), ][1:10, ]
+crop_dam10 <- crop_dam[order(-crop_dam$CROPDMGVAL), ][1:10, ]
+
+```
+
+### 4. Results
+##### 4.1. Question 1
+
+1. Across the United States, which types of events (as indicated in the EVTYPE variable) are most harmful with respect to population health?
+
+Injuries versus Fatalities ---> create the plot
+
+```r
+par(mfrow = c(1, 2), mar = c(10, 4, 3, 2), mgp = c(3, 1, 0), cex = 0.8)
+barplot(fatalities_10$FATALITIES, las = 3, names.arg = fatalities_10$EVTYPE, main = "Top 10 Fatalities by Weather Events", 
+    ylab = "Total Fatalities", col = "green")
+barplot(injuries_10$INJURIES, las = 3, names.arg = injuries_10$EVTYPE, main = "Top 10 Injuries by Weather Events", 
+    ylab = "Total Injuries", col = "blue")
+    
+dev.copy(png,file="barplot1.png")
+dev.off()
+
+```
+![plot of chunk unnamed-chunk-1](/barplot1.png)
+
+Conclusion: The weather event that causes the most harm to public health is Tornadoes. They have shown in the graphs above to be the largest cause of fatalities and injuries due to weather events in the United States.
+
+##### 4.2. Question 2
+
+2. Across the United States, which types of events have the greatest economic consequences?
+
+```r
+par(mfrow = c(1, 2), mar = c(10, 4, 3, 2), mgp = c(3, 1, 0), cex = 0.8)
+barplot(prop_dam10$PROPDMGVAL/(10^9), las = 3, names.arg = prop_dam10$EVTYPE, 
+    main = "Top 10 Property Damage caused by Weather Events", ylab = "Cost in billions", 
+    col = "green")
+barplot(crop_dam10$CROPDMGVAL/(10^9), las = 3, names.arg = crop_dam10$EVTYPE, 
+    main = "Top 10 Crop Damages by Weather Events", ylab = "Cost in Billions", 
+    col = "blue")
+    
+dev.copy(png,file="barplot2.png")
+dev.off()
+
+```
+![plot of chunk unnamed-chunk-2](/barplot2.png)
+
+Conclusion: The events that have caused the most damage in the United states from an economic stand point are Flood, Drought and Hurricane, but for different reasons. For example the biggest risk to crops is a drougth event, whereas the biggest threat to properties are floods. 

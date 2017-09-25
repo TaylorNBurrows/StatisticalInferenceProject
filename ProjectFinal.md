@@ -103,7 +103,7 @@ lines(x, y, pch=21, col="blue", lty=5)
 
 
 
-#Part Two: Basic Inferential Data Analysis Instructions
+# Part Two: Basic Inferential Data Analysis Instructions
 
 
 ```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}

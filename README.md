@@ -95,3 +95,4 @@ lines(density(mean_Sim), lwd=3, col="red")
 #Show Normal Distribution curve as well to show comparison
 lines(x, y, pch=21, col="blue", lty=5)
 ```
+![plot of chunk unnamed-chunk-1](/NormalDistribution.jpeg)
